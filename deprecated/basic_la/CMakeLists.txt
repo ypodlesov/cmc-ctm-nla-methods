@@ -1,0 +1,1 @@
+add_library(BASIC_LA STATIC helpers.h matrix.cpp vector.cpp)
