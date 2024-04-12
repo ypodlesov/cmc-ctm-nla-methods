@@ -3,10 +3,8 @@
 #include <cstddef>
 #include <cstdlib>
 #include <ctime>
-#include <random>
 #include <type_traits>
 #include <utility>
-#include <cassert>
 
 template <typename ContainerType, typename T, bool Hold = true>
 struct CommonContainer {
@@ -16,6 +14,12 @@ struct CommonContainer {
         , data_{new T[mem_size_]}
         , random_ptr_{new NHelpers::Random<T>()}
     {
+    }
+
+    CommonContainer(const CommonContainer& other) {
+        mem_size_ = other.mem_size_;
+        data_ = new T[mem_size_];
+        random_ptr_ = new NHelpers::Random<T>();
     }
 
     CommonContainer(CommonContainer&& other) {
@@ -71,4 +75,3 @@ struct CommonContainer {
     T* data_{nullptr};
     NHelpers::Random<T>* random_ptr_{nullptr};
 };
-

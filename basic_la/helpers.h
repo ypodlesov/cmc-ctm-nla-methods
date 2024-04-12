@@ -1,6 +1,7 @@
 #pragma once
 #include <cmath>
 #include <random>
+#include <ctime>
 
 namespace NHelpers {
 
