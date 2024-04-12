@@ -1,6 +1,6 @@
 #include "qr_decomposition.h" 
 
-bool QRDecomposition(SquareMatrix <double> &q, SquareMatrix <double> &r) {
+bool QRDecomposition(SquareMatrix<double>& q, SquareMatrix<double>& r) {
     const size_t n = q.row_cnt_;
     r = SquareMatrix<double>(n);
     NHelpers::Nullify(r.data_, r.mem_size_);
@@ -16,7 +16,7 @@ bool QRDecomposition(SquareMatrix <double> &q, SquareMatrix <double> &r) {
         }
         double r_jj = NHelpers::InnerProd(q_j_col, q_j_col, n);
         r(j, j) = r_jj;
-        for (size_t k = 0; k < n && !NHelpers::RoughEq(r_jj, 0); ++k) {
+        for (size_t k = 0; k < n && !NHelpers::RoughEq<double, double>(r_jj, 0, 0.000001); ++k) {
             q_j_col[k] /= r_jj;
         }
     }

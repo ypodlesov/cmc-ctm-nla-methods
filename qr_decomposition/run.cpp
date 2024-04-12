@@ -1,43 +1,37 @@
-// #include "qr_decomposition.h"
+#include "qr_decomposition.h"
 
 #include <catch2/catch_test_macros.hpp>
 #include <catch2/benchmark/catch_benchmark.hpp>
 
 TEST_CASE("Benchmark") {
-    // {
-    //     std::srand(std::time(nullptr));
-    //     TMatrix<double> Q = TMatrix<double>::CreateRandom(10, 10);
-    //     TMatrix<double> B = Q;
-    //     TMatrix<double> R;
-    //     BENCHMARK("Size 10") {
-    //         REQUIRE(QRDecomposition(Q, R));
-    //     };
-    // }
-    // {
-    //     std::srand(std::time(nullptr));
-    //     TMatrix<double> Q = TMatrix<double>::CreateRandom(50, 50);
-    //     TMatrix<double> B = Q;
-    //     TMatrix<double> R;
-    //     BENCHMARK("Size 50") {
-    //         REQUIRE(QRDecomposition(Q, R));
-    //     };
-    // }
-    // {
-    //     std::srand(std::time(nullptr));
-    //     TMatrix<double> Q = TMatrix<double>::CreateRandom(100, 100);
-    //     TMatrix<double> B = Q;
-    //     TMatrix<double> R;
-    //     BENCHMARK("Size 100") {
-    //         REQUIRE(QRDecomposition(Q, R));
-    //     };
-    // }
-    // {
-    //     std::srand(std::time(nullptr));
-    //     TMatrix<double> Q = TMatrix<double>::CreateRandom(1000, 1000);
-    //     TMatrix<double> B = Q;
-    //     TMatrix<double> R;
-    //     BENCHMARK("Size 1000") {
-    //         REQUIRE(QRDecomposition(Q, R));
-    //     };
-    // }
+    {
+        size_t n = 512;
+        SquareMatrix<double> q, r;
+        SquareMatrix<double> a(n);
+        a.GenRandom(n * n, true);
+        q = a;
+        BENCHMARK("Size 512") {
+            REQUIRE(QRDecomposition(q, r));
+        };
+    }
+    {
+        size_t n = 1024;
+        SquareMatrix<double> q, r;
+        SquareMatrix<double> a(n);
+        a.GenRandom(n * n, true);
+        q = a;
+        BENCHMARK("Size 1024") {
+            REQUIRE(QRDecomposition(q, r));
+        };
+    }
+    {
+        size_t n = 2048;
+        SquareMatrix<double> q, r;
+        SquareMatrix<double> a(n);
+        a.GenRandom(n * n, true);
+        q = a;
+        BENCHMARK("Size 2048") {
+            REQUIRE(QRDecomposition(q, r));
+        };
+    }
 }

@@ -1,4 +1,4 @@
-#include "matrix.h"
+#include "square_matrix.h"
 #include "qr_decomposition.h"
 
 #include <catch2/catch_test_macros.hpp>

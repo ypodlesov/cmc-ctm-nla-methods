@@ -1,5 +1,5 @@
 #pragma once
-#include <matrix.h>
+#include <square_matrix.h>
 #include <vector.h>
 #include <helpers.h>
 
