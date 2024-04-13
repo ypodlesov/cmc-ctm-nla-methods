@@ -1,0 +1,12 @@
+name: GitHub Actions Demo
+run-name: ${{ github.actor }} is testing out GitHub Actions 🚀
+on: [push]
+jobs:
+  Explore-GitHub-Actions:
+    runs-on: ubuntu-latest
+    steps:
+      - run: mkdir build
+      - run: cd build
+      - run: cmake ..
+      - run: make test_qr_decomposition
+      - run: ./test_qr_decomposition
