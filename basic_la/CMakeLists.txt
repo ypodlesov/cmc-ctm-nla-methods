@@ -1,1 +1,1 @@
-add_library(BASIC_LA STATIC matrix.cpp common_matrix.cpp square_matrix.cpp vector.cpp)
+add_library(BASIC_LA STATIC matrix.cpp common_matrix.cpp vector.cpp)

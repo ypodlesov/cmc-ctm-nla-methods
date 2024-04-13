@@ -9,7 +9,9 @@ struct CommonMatrix: public CommonContainer<CommonMatrix<SpecMatrix, T, Hold>, T
     using Base = CommonContainer<CommonMatrix<SpecMatrix, T, Hold>, T, Hold>;
     using Base::data_;
 
-    CommonMatrix(size_t row_cnt = 0, size_t col_cnt = 0, size_t mem_size = 0)
+    CommonMatrix() = default;
+
+    CommonMatrix(size_t row_cnt, size_t col_cnt, size_t mem_size)
         : Base(mem_size)
         , row_cnt_{row_cnt}
         , col_cnt_{col_cnt}
@@ -18,6 +20,8 @@ struct CommonMatrix: public CommonContainer<CommonMatrix<SpecMatrix, T, Hold>, T
 
     CommonMatrix(CommonMatrix&& other)
         : Base(std::move(other))
+        , row_cnt_{other.row_cnt_}
+        , col_cnt_{other.col_cnt_}
     {
     }
 
@@ -49,33 +53,32 @@ struct CommonMatrix: public CommonContainer<CommonMatrix<SpecMatrix, T, Hold>, T
         return static_cast<const SpecMatrix*>(this)->GetMemSizeImpl();
     }
 
-    bool IsTriangular(NHelpers::ETriangularType type) {
+    bool IsTriangular(NHelpers::ETriangularType type) const {
         bool is_upper = type == NHelpers::ETriangularType::Upper;
         bool flag = true;
+        const SpecMatrix* mat = static_cast<const SpecMatrix*>(this);
+        assert(mat);
         for (size_t i = 0; i < row_cnt_; ++i) {
             for (size_t j = (is_upper ? 0 : i + 1); j < (is_upper ? i : col_cnt_); ++j) {
-                flag &= NHelpers::RoughEq(Get(i, j), 0.0);
+                flag &= NHelpers::RoughEq(mat->GetImpl(i, j), 0.0);
             }
         }
         return flag;
     }
 
     void VecMult(const Vector<T>& x, Vector<T>& result) const {
-        if (!result || result.mem_size_ != row_cnt_) {
+        if (!result.data_ || result.mem_size_ != row_cnt_) {
             result = Vector<T>(row_cnt_);
         }
         NHelpers::Nullify(result.data_, result.mem_size_);
         auto* original = static_cast<const SpecMatrix*>(this);
-        if (!original) {
-            return;
-        }
+        assert(original);
         for (size_t j = 0; j < col_cnt_; ++j) {
             T x_j = x.data_[j];
             for (size_t i = 0; i < row_cnt_; ++i) {
                 result.data_[i] += original->GetImpl(i, j) * x_j;
             }
         }
-        return;
     }
 
     ~CommonMatrix() {

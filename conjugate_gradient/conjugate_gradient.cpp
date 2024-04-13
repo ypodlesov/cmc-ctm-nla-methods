@@ -1,55 +1,38 @@
 #include "conjugate_gradient.h"
 #include "helpers.h"
+#include <utility>
 
 bool ConjugateGradient(const SparseMatrix<double>& a, const Vector<double>& b, Vector<double>& x) {
-    if (!a.data_ || !b.data_) {
-        return false;
-    }
+    constexpr double eps = 0.000001;
+    assert(a.data_ && b.data_ && a.row_cnt_ == b.mem_size_);
     if (!x.data_ || x.mem_size_ != a.col_cnt_) {
         x = Vector<double>(a.col_cnt_);
     }
-    Vector<double> current_residual = b;
-    Vector<double> current_p = b;
-    Vector<double> current_x(a.row_cnt_);
+    Vector<double> current_residual(b);
+    Vector<double> current_p(b);
+    Vector<double> current_x(a.col_cnt_);
     NHelpers::Nullify(current_x.data_, current_x.mem_size_);
-    // if (!A || !b || A.Size2 != b.Size) {
-    //     return false;
-    // }
-    // if (!x || x.Size != A.Size2) {
-    //     x = TVector<double>(A.Size1);
-    // }
-    // TVector<double> currentResidual, currentP, currentX;
-    // currentP = b;
-    // currentResidual = b;
-    // currentX = TVector<double>(A.Size1);
-    // currentX.Nullify();
+    size_t n = b.mem_size_;
 
-    // double current_alpha, current_beta;
-    for (size_t j = 0; j < x.mem_size_ && !NHelpers::RoughEq<double, double>(x.Norm2(), 0.0, 0.001); ++j) {
+    double current_alpha, current_beta;
+    for (size_t j = 0; j < x.mem_size_ * x.mem_size_ && !NHelpers::RoughEq<double, double>(current_residual.Norm2(), 0.0, 0.001); ++j) {
         Vector<double> ap;
         a.VecMult(current_p, ap);
+        double ap_cur_p_dot_prod = NHelpers::InnerProd(ap.data_, current_p.data_, n);
+        if (NHelpers::RoughEq<double, double>(ap_cur_p_dot_prod, 0.0, eps)) {
+            break;
+        }
+        double current_residual_norm = NHelpers::InnerProd(current_residual.data_, current_residual.data_, n);
+        current_alpha = current_residual_norm / ap_cur_p_dot_prod;
+        current_x.PlusAX(current_p, current_alpha);
+        Vector<double> next_residual;
+        next_residual.AXPlusBY(current_residual, 1, ap, -current_alpha);
+        if (NHelpers::RoughEq<double, double>(current_residual_norm, 0.0, eps)) {
+            break;
+        }
+        current_beta = NHelpers::InnerProd(next_residual.data_, next_residual.data_, n) / current_residual_norm;
+        current_p.AXPlusBY(next_residual, 1, current_p, current_beta);
     }
-
-    // for (size_t j = 0; j < x.Size * x.Size && !RoughEq<double, double>(TVector<double>::Norm2(currentResidual), 0, 0.001); ++j) {
-    //     TVector<double> Ap;
-    //     TMatrix<double>::MVMultiply(A, currentP, Ap);
-    //     double innerProduct = TVector<double>::InnerProd(Ap, currentP);
-    //     if (RoughEq(innerProduct, 0)) {
-    //         x = std::move(currentX);
-    //         return true;
-    //     }
-    //     double currentResidualNorm = TVector<double>::InnerProd(currentResidual, currentResidual);
-    //     current_alpha = currentResidualNorm / innerProduct;
-    //     currentX = currentX + currentP * current_alpha;
-    //     TVector<double> nextResidual = currentResidual - Ap * current_alpha;
-    //     if (RoughEq(currentResidualNorm, 0)) {
-    //         x = std::move(currentX);
-    //         return true; 
-    //     }
-    //     current_beta = TVector<double>::InnerProd(nextResidual, nextResidual) / currentResidualNorm;
-    //     currentP = nextResidual + currentP * current_beta;
-    //     currentResidual = nextResidual;
-    // }
-    // x = std::move(currentX);
+    x = std::move(current_x);
     return true;
 }

@@ -1,4 +1,4 @@
-#include "square_matrix.h"
+#include "matrix.h"
 #include "qr_decomposition.h"
 
 #include <catch2/catch_test_macros.hpp>
@@ -8,21 +8,26 @@ using Catch::Generators::random;
 using Catch::Generators::take;
 
 static void Test(const uint32_t n) {
-    SquareMatrix<double> q, r;
-    SquareMatrix<double> a(n);
-    a.GenRandom(n * n, true);
+    Matrix<double> q, r;
+    Matrix<double> a;
+    NHelpers::GenRandomMatrix(a, n, n, true);
     q = a;
+    REQUIRE(q == a);
     REQUIRE(QRDecomposition(q, r));
-    SquareMatrix<double> c;
-    SquareMatrix<double>::MMMult(q, r, c);
+    Matrix<double> c;
+    Matrix<double>::MMMult(q, r, c);
     REQUIRE(a == c);
     REQUIRE(r.IsTriangular(NHelpers::ETriangularType::Upper));
 }
 
-TEST_CASE("Size 10") {
-    Test(10);
+TEST_CASE("Size 128") {
+    Test(128);
 }
 
-TEST_CASE("Size 100") {
-    Test(100);
+TEST_CASE("Size 256") {
+    Test(256);
+}
+
+TEST_CASE("Size 512") {
+    Test(512);
 }

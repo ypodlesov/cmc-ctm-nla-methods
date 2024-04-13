@@ -6,9 +6,6 @@
 #include <catch2/catch_test_macros.hpp>
 #include <catch2/generators/catch_generators_all.hpp>
 
-using Catch::Generators::random;
-using Catch::Generators::take;
-
 static void Test(const uint32_t n) {
     std::srand(std::time(nullptr));
     const TMatrix<double> A = TMatrix<double>::GenerateRandomSymmetricDefinite(n, EDefiniteness::Positive);

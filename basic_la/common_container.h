@@ -1,5 +1,6 @@
 #pragma once
 #include "helpers.h"
+#include <cassert>
 #include <cstddef>
 #include <cstdlib>
 #include <ctime>
@@ -9,29 +10,38 @@
 template <typename ContainerType, typename T, bool Hold = true>
 struct CommonContainer {
 
+    CommonContainer() = default;
+
     CommonContainer(size_t mem_size)
         : mem_size_{mem_size}
         , data_{new T[mem_size_]}
-        , random_ptr_{new NHelpers::Random<T>()}
     {
     }
 
     CommonContainer(const CommonContainer& other) {
         mem_size_ = other.mem_size_;
         data_ = new T[mem_size_];
-        random_ptr_ = new NHelpers::Random<T>();
+        for (size_t i = 0; i < mem_size_; ++i) {
+            data_[i] = other.data_[i];
+        }
     }
 
     CommonContainer(CommonContainer&& other) {
+        if (data_ && Hold) {
+            delete[] data_;
+            data_ = nullptr;
+        }
         std::swap(data_, other.data_);
         other.data_ = nullptr;
         std::swap(mem_size_, other.mem_size_);
         other.mem_size_ = 0;
-        std::swap(random_ptr_, other.random_ptr_);
-        other.random_ptr_ = nullptr;
     }
 
     CommonContainer& operator =(const CommonContainer& other) {
+        if (data_ && Hold) {
+            delete[] data_;
+            data_ = nullptr;
+        }
         mem_size_ = other.mem_size_;
         data_ = new T[mem_size_];
         for (size_t i = 0; i < mem_size_; ++i) {
@@ -45,27 +55,39 @@ struct CommonContainer {
         other.data_ = nullptr;
         std::swap(mem_size_, other.mem_size_);
         other.mem_size_ = 0;
-        std::swap(random_ptr_, other.random_ptr_);
-        other.random_ptr_ = nullptr;
         return *this;
     }
 
-    template <typename std::enable_if<std::is_floating_point<T>::value>::type* = nullptr>
-    void GenRandom(size_t n, bool is_int = false) {
-        for (size_t i = 0; i < n; ++i) {
-            data_[i] = RandElem() * n * n;
-            if (is_int) {
-                data_[i] = int(data_[i]);
-            }
+    template <typename std::enable_if<std::is_arithmetic<T>::value>::type* = nullptr>
+    void PlusAX(const CommonContainer& x, const T& alpha = 1) {
+        assert(mem_size_ == x.mem_size_);
+        for (size_t i = 0; i < mem_size_; ++i) {
+            data_[i] += alpha * x.data_[i];
         }
     }
 
-    T RandElem() const {
-        return random_ptr_->Get();
+    template <typename std::enable_if<std::is_arithmetic<T>::value>::type* = nullptr>
+    void AXPlusBY(const CommonContainer& x, const T& alpha, const CommonContainer& y, const T& beta = 1) {
+        assert(x.mem_size_ == y.mem_size_);
+        if (data_ && Hold) {
+            delete[] data_;
+            data_ = nullptr;
+        }
+        mem_size_ = x.mem_size_;
+        data_ = new T[mem_size_];
+        for (size_t i = 0; i < mem_size_; ++i) {
+            data_[i] = x.data_[i] * alpha + y.data_[i] * beta;
+        }
+    }
+
+    template <typename std::enable_if<std::is_floating_point<T>::value>::type* = nullptr>
+    inline T Norm2() const noexcept {
+        T result = NHelpers::InnerProd(data_, data_, mem_size_);
+        return std::sqrt(result);
     }
 
     ~CommonContainer() {
-        if (Hold && data_) {
+        if (data_ && Hold) {
             delete[] data_;
             data_ = nullptr;
         }
@@ -73,5 +95,4 @@ struct CommonContainer {
 
     size_t mem_size_;
     T* data_{nullptr};
-    NHelpers::Random<T>* random_ptr_{nullptr};
 };

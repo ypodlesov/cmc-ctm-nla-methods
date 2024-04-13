@@ -1,6 +1,5 @@
 #pragma once
 #include <cmath>
-#include <random>
 #include <ctime>
 
 namespace NHelpers {
@@ -38,25 +37,9 @@ namespace NHelpers {
         return result;
     }
 
-    template <typename T>
-    struct Random {
-
-        Random() 
-            : gen_{rd()}
-        {
-        }
-
-        inline T Get() {
-            return std::generate_canonical<T, 10>(gen_);
-        }
-
-        std::random_device rd;
-        std::mt19937 gen_;
-    };
-
     enum class ETriangularType {
         Upper,
         Lower
     };
-    
+
 } // namespace NHelpers

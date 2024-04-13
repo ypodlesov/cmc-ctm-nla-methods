@@ -1,15 +1,15 @@
 #include "qr_decomposition.h" 
 
-bool QRDecomposition(SquareMatrix<double>& q, SquareMatrix<double>& r) {
+bool QRDecomposition(Matrix<double>& q, Matrix<double>& r) {
     const size_t n = q.row_cnt_;
-    r = SquareMatrix<double>(n);
+    r = Matrix<double>(n, n);
     NHelpers::Nullify(r.data_, r.mem_size_);
     for (size_t j = 0; j < n; ++j) {
         double *q_j_col = &q.data_[j * n];
         for (size_t i = 0; i < j; ++i) {
-            double inner_prod = NHelpers::InnerProd(q_j_col, &q.data_[i * n], n);
-            r(i, j) = inner_prod;
             double *q_i_col = &q.data_[i * n];
+            double inner_prod = NHelpers::InnerProd(q_j_col, q_i_col, n);
+            r(i, j) = inner_prod;
             for (size_t k = 0; k < n; ++k) {
                 q_j_col[k] -= q_i_col[k] * inner_prod;
             }
