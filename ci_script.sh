@@ -8,3 +8,5 @@ cd build
 cmake ..
 make test_qr_decomposition
 ./test_qr_decomposition
+make test_conjugate_gradient
+./test_conjugate_gradient
