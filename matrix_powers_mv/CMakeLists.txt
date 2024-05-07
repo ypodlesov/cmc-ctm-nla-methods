@@ -1,0 +1,6 @@
+add_catch(test_matrix_powers_mv test.cpp matrix_powers_mv.cpp)
+target_include_directories(test_matrix_powers_mv PRIVATE ${BASIC_LA_PATH})
+target_link_libraries(test_matrix_powers_mv PRIVATE BASIC_LA)
+
+target_include_directories(test_matrix_powers_mv PRIVATE ${METIS_INCLUDE_PATH})
+target_link_libraries(test_matrix_powers_mv PRIVATE metis)

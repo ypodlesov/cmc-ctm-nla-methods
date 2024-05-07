@@ -12,7 +12,7 @@ struct CommonContainer {
 
     CommonContainer() = default;
 
-    CommonContainer(size_t mem_size)
+    CommonContainer(int64_t mem_size)
         : mem_size_{mem_size}
         , data_{new T[mem_size_]}
     {
@@ -21,7 +21,7 @@ struct CommonContainer {
     CommonContainer(const CommonContainer& other) {
         mem_size_ = other.mem_size_;
         data_ = new T[mem_size_];
-        for (size_t i = 0; i < mem_size_; ++i) {
+        for (int64_t i = 0; i < mem_size_; ++i) {
             data_[i] = other.data_[i];
         }
     }
@@ -44,7 +44,7 @@ struct CommonContainer {
         }
         mem_size_ = other.mem_size_;
         data_ = new T[mem_size_];
-        for (size_t i = 0; i < mem_size_; ++i) {
+        for (int64_t i = 0; i < mem_size_; ++i) {
             data_[i] = other.data_[i];
         }
         return *this;
@@ -61,7 +61,7 @@ struct CommonContainer {
     template <typename std::enable_if<std::is_arithmetic<T>::value>::type* = nullptr>
     void PlusAX(const CommonContainer& x, const T alpha = 1) {
         assert(mem_size_ == x.mem_size_ && data_ && x.data_);
-        for (size_t i = 0; i < mem_size_; ++i) {
+        for (int64_t i = 0; i < mem_size_; ++i) {
             data_[i] += alpha * x.data_[i];
         }
     }
@@ -69,7 +69,7 @@ struct CommonContainer {
     template <typename std::enable_if<std::is_arithmetic<T>::value>::type* = nullptr>
     void AXPlusBY(const CommonContainer& x, const T alpha, const CommonContainer& y, const T beta) {
         assert(mem_size_ == x.mem_size_ && data_ && x.mem_size_ == y.mem_size_);
-        for (size_t i = 0; i < mem_size_; ++i) {
+        for (int64_t i = 0; i < mem_size_; ++i) {
             data_[i] = x.data_[i] * alpha + y.data_[i] * beta;
         }
     }
@@ -87,6 +87,6 @@ struct CommonContainer {
         }
     }
 
-    size_t mem_size_;
+    int64_t mem_size_;
     T* data_{nullptr};
 };

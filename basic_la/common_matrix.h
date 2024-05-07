@@ -12,7 +12,7 @@ struct CommonMatrix: public CommonContainer<CommonMatrix<SpecMatrix, T, Hold>, T
 
     CommonMatrix() = default;
 
-    CommonMatrix(size_t row_cnt, size_t col_cnt, size_t mem_size)
+    CommonMatrix(int64_t row_cnt, int64_t col_cnt, int64_t mem_size)
         : Base(mem_size)
         , row_cnt_{row_cnt}
         , col_cnt_{col_cnt}
@@ -47,17 +47,17 @@ struct CommonMatrix: public CommonContainer<CommonMatrix<SpecMatrix, T, Hold>, T
         return *this;
     }
 
-    inline T Get(size_t row, size_t col) const {
+    inline T Get(int64_t row, int64_t col) const {
         T result;
         static_cast<const SpecMatrix*>(this)->GetImpl(row, col, result);
         return result;
     }
 
-    inline void Get(size_t row, size_t col, T& result) const {
+    inline void Get(int64_t row, int64_t col, T& result) const {
         static_cast<const SpecMatrix*>(this)->GetImpl(row, col, result);
     }
 
-    inline size_t GetMemSize() const {
+    inline int64_t GetMemSize() const {
         return static_cast<const SpecMatrix*>(this)->GetMemSizeImpl();
     }
 
@@ -66,8 +66,8 @@ struct CommonMatrix: public CommonContainer<CommonMatrix<SpecMatrix, T, Hold>, T
         bool flag = true;
         const SpecMatrix* mat = static_cast<const SpecMatrix*>(this);
         assert(mat);
-        for (size_t i = 0; i < row_cnt_; ++i) {
-            for (size_t j = (is_upper ? 0 : i + 1); j < (is_upper ? i : col_cnt_); ++j) {
+        for (int64_t i = 0; i < row_cnt_; ++i) {
+            for (int64_t j = (is_upper ? 0 : i + 1); j < (is_upper ? i : col_cnt_); ++j) {
                 flag &= NHelpers::RoughEq(mat->GetImpl(i, j), 0.0);
             }
         }
@@ -78,6 +78,6 @@ struct CommonMatrix: public CommonContainer<CommonMatrix<SpecMatrix, T, Hold>, T
         row_cnt_ = col_cnt_ = 0;
     }
 
-    size_t row_cnt_{};
-    size_t col_cnt_{};
+    int64_t row_cnt_{};
+    int64_t col_cnt_{};
 };

@@ -1,5 +1,4 @@
 #include "conjugate_gradient.h"
-#include "helpers.h"
 #include <filesystem>
 #include <fstream>
 #include <sstream>
