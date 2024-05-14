@@ -1,0 +1,301 @@
+\documentclass[a4paper,12pt]{report}
+\usepackage[T2A]{fontenc}
+\usepackage[russian]{babel}
+\usepackage{subcaption}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{amsthm}
+\usepackage{float} 
+\usepackage{lscape}
+\usepackage{array}
+\usepackage[matrix,arrow,curve]{xy}
+\usepackage{graphicx}
+\usepackage{makecell}
+\usepackage{titlesec}
+\usepackage{titletoc}
+\usepackage{blkarray}
+\usepackage{rotating}
+\usepackage{longtable}
+\usepackage{geometry}
+\usepackage{fancyhdr}
+\usepackage{enumitem}
+\newlist{steps}{enumerate}{1}
+\setlist[steps, 1]{label = Step \arabic*:}
+\usepackage{diagbox} 
+\usepackage{multirow}
+\usepackage{url}
+\usepackage{listings}
+\lstset
+{
+    language=C++, % выберите язык программирования
+    basicstyle=\ttfamily, % шрифт для кода
+    keywordstyle=\color{blue}, % стиль ключевых слов
+    commentstyle=\color{green!60!black}, % стиль комментариев
+    stringstyle=\color{red}, % стиль строк
+    showstringspaces=false, % не показывать пробелы в строках
+    frame=single, % рамка вокруг кода
+    numbers=left, % номера строк
+    numberstyle=\tiny, % стиль номеров строк
+    breaklines=true % перенос строк, если необходимо
+}
+\usepackage{ dsfont }
+\usepackage{algorithm}
+\usepackage[noend]{algpseudocode}
+
+
+%\usepackage{hyperref}
+
+% \textwidth=175mm  \textheight=257mm
+% \voffset=-2.64cm  \hoffset=-1.85cm
+\geometry{tmargin=2cm,bmargin=2cm,lmargin=2.5cm,rmargin=1cm}
+
+\fancyhf{}
+\renewcommand{\headrulewidth}{0pt}
+\fancyhead[C]{\thepage}
+\pagestyle{fancy}
+\fancypagestyle{plain}{%
+  \fancyhf{} % clear all header and footer fields
+  \renewcommand{\headrulewidth}{0pt}
+  \fancyhead[C]{\thepage} % except the center
+}
+\setlength{\headheight}{20pt}
+
+\renewcommand{\thesection}{\arabic{chapter}.\arabic{section}}
+\renewcommand{\thesubsection}{\arabic{chapter}.\arabic{section}.\arabic{subsection}}
+
+\titleformat
+    {\chapter}
+    [display]
+    {\bf\filcenter\Large}
+    {}
+    {-5em}
+    {
+        \rule{\textwidth}{1pt}
+        \centering
+    } % before-code
+    [
+    \vspace{-.5em}
+    \rule{\textwidth}{.3pt}
+    ] % after-code
+
+    
+\titlecontents
+    {chapter}
+    [1pt]
+    {\filright}
+    {}
+    {\bf}
+    { \dotfill\;\thecontentspage}
+
+\titleformat
+    {\section}
+    [block]
+    {\bf\large}
+    {\sectionname\,\,\thesection}
+    {0.5em}
+    {}
+    []
+
+\titlecontents
+    {section}
+    [1em]
+    {\filright}
+    {\thecontentslabel \ }
+    {}
+    {\dotfill\thecontentspage}
+    
+%\titleformat{\subsection}[block]{\bf\large}{\subsectionname\,\,\thesubsection}{.5em}{}{}
+% \titlecontents{subsection}[2em]{\filright}{\thecontentslabel \ }{}{\dotfill\thecontentspage}
+
+\usepackage{xcolor,paracol}
+\setlength{\parindent}{15pt}
+
+\setcounter{page}{1} 
+\renewcommand{\baselinestretch}{1.2}
+\newtheorem{acknowledgement}{Благодарность}
+
+\newtheorem{definition}{Определение}[chapter]
+\newtheorem{lemma}{Lemma}[chapter]
+\newtheorem{theorem}{Theorem}[chapter]
+\newtheorem{remark}{Замечание}[chapter]
+\newtheorem{proposition}{Утверждение}[chapter]
+\newtheorem{property}{chapter}
+\newtheorem{corollary}{Следствие}[chapter]
+\newtheorem{assumption}{Assumption}[chapter]
+\newtheorem{example}{Пример}[chapter]
+
+\renewcommand{\thesection}{\arabic{chapter}.\arabic{section}}
+\renewcommand{\theequation}{\arabic{chapter}.\arabic{equation}}
+\newcommand{\secref}[1]{\S\ref{#1}}
+\renewcommand*\footnoterule{}
+
+\usepackage{color}
+\definecolor{HREF-COLOR}{RGB}{10,54,100}
+\usepackage[unicode, colorlinks, urlcolor=HREF-COLOR, linkcolor=Violet, pagecolor=Violet]{hyperref}
+
+\pagecolor{white}
+\author{\href{https://github.com/ypodlesov}{Егор Подлесов}}
+\title{\textbf{Курсовая работа по теме "Умножение разреженных матриц с уменьшенным количеством коммуникаций".}}
+
+\begin{document}
+
+    \maketitle
+    \clearpage
+    \tableofcontents
+
+    \chapter{ Введение }
+
+    Стоимость вычислительного алгоритма включает в себя как арифметику, так и обмен данными. Термин <<обмен данными>> используется в общем смысле для обозначения перемещения данных либо между уровнями иерархии памяти - <<последовательный>>, либо между несколькими процессорами - <<параллельный>>. Затраты на связь намного превышают арифметические затраты, и вместе с технологическим развитием разрыв быстро увеличивается. Это говорит о том, что для достижения наилучшей производительности алгоритмы должны минимизировать обмен данными, даже если для этого могут потребоваться некоторые избыточные арифметические операции. Такие алгоритмы называются <<избегающими общения>>.
+
+    Методы подпространств Крылова (KSM) - это итерационные алгоритмы для решения больших разреженных линейных систем и задач на собственные значения. Современные KSM-системы тратят большую часть своего времени на такие операции, как умножение разреженной матрицы на вектор (SpMV) и векторно-векторные операции (включая скалярные произведения и суммы векторов). Кроме того, зависимости данных между этими операциями означают, что только небольшая часть этих коммуникаций может быть скрыта. Многие важные научные и инженерные вычисления выполняются в основном с использованием методов Крылова, поэтому производительность многих кодов можно было бы повысить, внедрив KSM, которые обеспечивают меньшее количество коммуникаций.
+
+    Наша цель - выполнить s итераций KSM с тем же количеством коммуникаций что было за 1 итерацию. Это можно сделать при определенных предположениях о матрице и для определенных KSM, в теории для многих KSM, на практике для некоторых KSM. \textbf{Эта работа объясняет, как избежать коммуникаций в этих методах Крылова на операции SpMV}.
+
+    \chapter{ Методы подпространств Крылова }
+    
+    \section{ Структура Крыловских методов }
+    Методы подпространства Крылова (KSM) - это большой класс итерационных алгоритмов, которые работают с конечными матрицами и векторами в вещественной и сложной арифметике. Они имеют множество применений, включая решение линейных систем, задач наименьших квадратов, задач на собственные значения и задач с сингулярными значениями. В этой работе обсуждается решение линейных систем $Ax = b$ и задач на собственные значения $Ax = \lambda x$. В данной работе представляются методы Крылова, избегающие коммуникаций.
+
+    KSM работают, используя одно или несколько матрично-векторных произведений на каждой итерации для добавления вектора (ов) к базису для одного или нескольких так называемых <<подпространств Крылова>> с желаемыми свойствами. Подпространство Крылова относительно квадратной матрицы $A_{n \times n}$ и вектора $v$ длины $n$ является следующим подпространством:
+    $$ K_k(A, v) = \{\, v,\, Av,\, A^2v,\, \ldots,\, A^{k-1}v\, \}$$
+    где $k$ - целое положительное число. В KSM используется одно или несколько подпространств Крылова. Предполагается, что каждая итерация KSM увеличивает размерность этих подпространств. Они используются в качестве расширяющегося пространства, из которого с помощью проекции вычисляется приближенное решение $x_k$ (если решается $Ax = b$) или приближенные собственные значения и векторы (если решается $Ax = x$).
+    
+    \section{ Модель стоимостей вычислительных операций в Крыловских методах }
+    Каждая итерация KSM может состоять из
+    \begin{enumerate}
+        \item $SpMV(A, b)$ - умножение разреженной матрицы $A_{n \times n}$ на вектор $v$ длины $n$.
+        \item $InnerProduct(a, b)$ - скалярное произведение векторов $a$ и $b$.
+        \item $AXPY(\beta, a, \alpha, y)$ - линейная комбинация векторов $a = \beta \cdot a + \alpha \cdot y$. 
+    \end{enumerate}
+
+    Самая дорогая с точки зрения коммуникаций операция - SpMV. 
+    
+    \chapter{ Коммуникации при параллельных вычислениях}
+
+    \section{Что такое коммуникации в вычислительных алгоритмах}
+    Если мы хотим избежать коммуникаций, мы сначала должны понять, что такое <<коммуникации>>. В этой работе предполагается, что компьютеры при исполнении программы выполняют: арифметические вычисления и коммуницируют. Коммуникация определяется как перемещение данных. Это включает в себя как перемещение данных между уровнями иерархии памяти, которое мы называем последовательной передачей, так и перемещение данных между процессорами, работающими параллельно, которое мы называем параллельной передачей. В иерархию памяти включаются все формы хранения, подключенные к центральному процессору (CPU), такие как кэш, основная память, твердотельный накопитель, жесткий диск или ленточный архив. Они могут быть подключены непосредственно к центральному процессору или через сетевой интерфейс. Основная память современных компьютеров, как правило, состоит из DRAM (динамической оперативной памяти), поэтому мы используем DRAM как синоним основной памяти.      
+
+    Взаимодействие между параллельными процессорами может принимать, среди прочего, следующие формы: 
+    \begin{itemize}
+        \item Обмен сообщениями между процессорами в системе с распределенной памятью
+        \item Контроль согласованности кэширования в системе с общей памятью
+        \item Передача данных между сопроцессорами, соединенными шиной, например, между центральным процессором и графическим процессором (<<Графический процессор>>)
+    \end{itemize}
+
+    Если мы рассматриваем два уровня в иерархии памяти, мы называем их <<быстрой>> памятью и <<медленной>> памятью. Быстрая память - это уровень с меньшей задержкой для процессора и, как правило, меньшей емкостью, чем медленная память. <<Быстрый>> и <<медленный>> всегда определяются в сравнении. Например, при рассмотрении кэша и DRAM кэш - это <<быстрый>>, а DRAM - <<медленный>>. Однако, если рассматривать DRAM и диск, то DRAM - это <<быстрый>>, а диск - <<медленный>>.
+    
+    \chapter{ Снижение количества коммуникаций в умножении разреженных матриц в крыловских методах}
+    Алгоритм умножения разреженной матрицы на вектор с уменьшенным числом коммуникаций называется <<MatrixPowers kernel>>. Будем называть его <<вычислительным ядром>>. Ядро MatrixPowers берет разреженную матрицу $A$ и плотный вектор $v$ и вычисляет $s$ векторов $Av,\, A^2v,\, \ldots,\, A^s v$. Для большого класса разреженных матриц ядро MatrixPowers может вычислить эти векторы для оптимально с точки зрения количества коммуникаций.
+    
+    В последовательном случае <<минимальный>> означает, что и матрица $A$, и векторы $v,\, Av,$ $\ldots,\, A^sv$ нужно перемещать между быстрой и медленной памятью всего $1 + o(1)$ раз. Наивная реализация этого ядра с использованием $s$ последовательных вызовов SpMV потребовала бы считывания разреженной матрицы $A$ из медленной памяти $s$ раз. 
+    
+    В параллельном случае <<минимальное>> означает, что требуемое количество сообщений на процессор может быть уменьшено в $\Theta(s)$ раз, так что количество сообщений для вычислительного ядра MatrixPowers будет таким же, как для $1 + o(1)$ вызовов параллельного SpMV. Поскольку многие стандартные методы подпространства Крылова тратят большую часть времени выполнения на SpMV, замена операций SpMV вычислительным ядром MatrixPowers может значительно ускорить выполнение.
+
+    \chapter{ Алгоритмы снижающие количество коммуникаций }
+
+    \section{ Введение обозначений }
+
+    Дана разреженная матрца $A$ размера $n \times n$. С ней ассоциируется направленный граф $G$ такой, что если $A_{ij} \ne 0$, то есть ребро из вершины $i$ в вершину $j$. В контексте вычисления матрично векторного произведения $y = A \cdot x$ это значит, что значение $y_i$ зависит от значения $x_j$.
+
+    Чтобы снизить количество коммуникаций в нашей процедуре MatrixPowers, требуется установить зависимости между матрично-векторными умножениями. Например такое множество $j$, что для $z = A^k x$ следует, что $z_i$ зависит от $x_j$. Построим граф, выражающий такие зависимости.
+
+    Пусть $x_j^{(i)}$ это $j$-ая компонента вектора $x^{(i)} = A^i \cdot x^{(0)}$. Каждому $x_j^{(i)}$ для всех $i \in \overline{0, s}$ и $j \in \overline{1,n}$ соответствует одноименная вершина.
+
+    Если $A_{jm} \ne 0$, то из вершины $x_j^{(i+1)}$ в $x_m^{(i)}$ есть ребро.
+
+    Вышеописанный граф из $n \cdot (s + 1)$ вершин обозначим $G$.
+
+    Назначим каждой вершине некоторый параметр <<степень локальности>> $q$. В сущности он обозначает разное для случаев параллельных и последовательных алгоритмов.
+    
+    $G_q$ - множество вершин графа с степенью локальности равной $q$. 
+
+    $G_q^{(i)}$ - множество вершин графа с степенью локальности равной $q$ и имеющих уровень $i$.
+
+    Пусть $S$ - некоторое множество вершин графа $G$. Обозначим $R(S)$ - множество вершин в которые есть путь в графе начинающийся из вершины множества $S$. Аналогично вводятся обозначения $R(S)_q$ и $R(S)_q^{(i)}$.
+
+    Введем также множество $L_q$. Определим его следующим образом:
+
+    $$ L_q = \{ x \in G_q \; : \; R(x) \subset G_q \} $$
+
+    Аналогично вводится множество $L_q^{(i)}$.
+
+    Введём множество вершин $B_{q,r}$. $x \in B_{q,r},$ тогда и только тогда, когда $x \in L_r$ и существует такой путь из некоторой вершины $y \in G_q$ в $x$, что $x$ - первая вершина в этом пути из множества $L_r$.
+
+    \section{ Алгоритмы }
+
+    \begin{algorithm}
+    \caption{PA0 Алгоритм (Код для процессора $q$)}
+    \label{algo:PA0}
+    \begin{algorithmic}[1]
+    
+    \For{$i = 1$ to $s$}
+        \ForAll{processors $r \neq q$}
+            \State Send all $x^{(i-1)}_j$ in $R^{(i-1)}_q(G^{(i)}_r)$ to processor $r$
+        \EndFor
+        \ForAll{processors $r \neq q$}
+            \State Receive all $x^{(i-1)}_j$ in $R^{(i-1)}_r(G^{(i)}_q)$ from processor $r$
+        \EndFor
+        \State Compute all $x^{(i)}_j$ in $L^{(i)}_q$
+        \State Wait for above receives to finish
+        \State Compute remaining $x^{(i)}_j$ in $G^{(i)}_q \setminus L^{(i)}_q$
+    \EndFor
+    
+    \end{algorithmic}
+    \end{algorithm}
+
+    \begin{algorithm}
+    \caption{PA1 Алгоритм (Код для процессора $q$)}
+    \label{algo:segment}
+    \begin{algorithmic}[1]
+        \ForAll{processors $r \neq q$}
+            \State Send all $x^{(0)}_j$ in $R^{(0)}_q(G_r)$ to processor $r$
+        \EndFor
+        \ForAll{processors $r \neq q$}
+            \State Receive all $x^{(0)}_j$ in $R^{(0)}_r(G_q)$ from processor $r$
+        \EndFor
+        \For{$i = 1$ to $s$}
+            \State Compute all $x^{(i)}_j$ in $L_q$
+        \EndFor
+        \State Wait for above receives to finish
+        \For{$i = 1$ to $s$}
+            \State Compute remaining $x^{(i)}_j$ in $R(G_q) \setminus L_q$
+        \EndFor
+    \end{algorithmic}
+    \end{algorithm}
+
+    \begin{algorithm}
+    \caption{PA2 algorithm (Code for processor q)}
+    \label{algo:PA2}
+    \begin{algorithmic}[1]
+        \For{$i = 1$ to $s$}
+            \State Compute $x^{(i)}_j$ in $\bigcup_{r \neq q} (R(Gr) \setminus L_q)$
+        \EndFor
+        
+        \ForAll{processors $r \neq q$}
+            \State Send $x^{(i)}_j$ in $B_{r,q}$ to processor $r$
+        \EndFor
+        
+        \ForAll{processors $r \neq q$}
+            \State Receive $x^{(i)}_j$ in $B_{r,q}$ from processor $r$
+        \EndFor
+        
+        \For{$i = 1$ to $s$}
+            \State Compute $x^{(i)}_j$ in $L_q \setminus \bigcup_{r \neq q} (R(Gr) \setminus L_q)$ 
+        \EndFor
+        
+        \State Wait for above receives to finish
+        
+        \For{$i = 1$ to $s$}
+            \State Compute remaining $x^{(i)}_j$ in $R(G_q) \setminus L_q \setminus \bigcup_{r \neq q} (R(G_q) \setminus L_r)$
+        \EndFor
+    \end{algorithmic}
+    \end{algorithm}
+
+    \chapter{ Результаты }
+    
+    
+    \chapter{ Заключение }
+    
+    
+
+\end{document}
