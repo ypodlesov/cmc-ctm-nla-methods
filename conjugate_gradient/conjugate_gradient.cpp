@@ -11,10 +11,10 @@ bool ConjugateGradient(const SparseMatrix<double>& a, const Vector<double>& b, V
     Vector<double> current_p(b);
     Vector<double> current_x(a.row_cnt_);
     NHelpers::Nullify(current_x.data_, current_x.mem_size_);
-    size_t n = b.mem_size_;
+    int64_t n = b.mem_size_;
 
     double current_alpha, current_beta;
-    for (size_t j = 0; j < x.mem_size_ * x.mem_size_ && !NHelpers::RoughEq<double, double>(current_residual.Norm2(), 0.0); ++j) {
+    for (int64_t j = 0; j < x.mem_size_ * x.mem_size_ && !NHelpers::RoughEq<double, double>(current_residual.Norm2(), 0.0); ++j) {
         Vector<double> ap(n);
         a.VecMult(current_p, ap);
 
@@ -51,10 +51,10 @@ bool ConjugateGradient(const Matrix<double>& a, const Vector<double>& b, Vector<
     Vector<double> current_p(b);
     Vector<double> current_x(a.row_cnt_);
     NHelpers::Nullify(current_x.data_, current_x.mem_size_);
-    size_t n = b.mem_size_;
+    int64_t n = b.mem_size_;
 
     double current_alpha, current_beta;
-    for (size_t j = 0; j < x.mem_size_ * x.mem_size_ && !NHelpers::RoughEq<double, double>(current_residual.Norm2(), 0.0); ++j) {
+    for (int64_t j = 0; j < x.mem_size_ * x.mem_size_ && !NHelpers::RoughEq<double, double>(current_residual.Norm2(), 0.0); ++j) {
         Vector<double> ap(n);
         a.VecMult(current_p, ap);
 

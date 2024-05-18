@@ -9,7 +9,7 @@ import sklearn.datasets
 
 filename = sys.argv[1]
 sz = int(filename)
-matrix = sklearn.datasets.make_sparse_spd_matrix(n_dim=sz, alpha=(sz - 10) / sz, sparse_format='csr').sorted_indices() * 10
+matrix = sklearn.datasets.make_sparse_spd_matrix(n_dim=sz, alpha=(sz - min(10, sz - 1)) / sz, sparse_format='csr').sorted_indices() * 10
 
 f = open(filename, 'w')
 
@@ -23,7 +23,7 @@ for elem in matrix.indices:
     print(elem, end=' ', file=f)
 print(file=f)
 
-for elem in matrix.indptr[:sz]:
+for elem in matrix.indptr:
     print(elem, end=' ', file=f)
 print(file=f)
 

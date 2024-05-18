@@ -28,6 +28,16 @@ function(add_if_exists name)
 endfunction()
 
 set(BASIC_LA_PATH ${CMAKE_CURRENT_SOURCE_DIR}/basic_la)
+set(GKLIB_PATH ${CMAKE_CURRENT_SOURCE_DIR}/GKlib)
+set(METIS_INCLUDE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/METIS/include)
+set(METIS_COPTIONS "${METIS_COPTIONS} -DIDXTYPEWIDTH=64")
+set(METIS_COPTIONS "${METIS_COPTIONS} -DREALTYPEWIDTH=64")
+set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ${METIS_COPTIONS}")
+
 add_if_exists(basic_la)
 add_if_exists(qr_decomposition)
 add_if_exists(conjugate_gradient)
+
+add_if_exists(GKlib)
+add_if_exists(METIS)
+add_if_exists(matrix_powers_mv)
