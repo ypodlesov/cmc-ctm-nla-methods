@@ -1,42 +1,93 @@
+#include <filesystem>
+#include <fstream>
+#include <sstream>
 #include "conjugate_gradient.h"
-#include "helpers.h"
 
 #include <catch2/catch_test_macros.hpp>
 #include <catch2/benchmark/catch_benchmark.hpp>
 
-void Prepare(TMatrix<double>& A, TVector<double>& b, const size_t n) {
-    std::srand(std::time(nullptr));
-    A = TMatrix<double>::GenerateRandomSymmetricDefinite(n, EDefiniteness::Positive);
-    b = TVector<double>::CreateRandom(n);
+void Prepare(SparseMatrix<double>& a, Vector<double>& b, const size_t n) {
+    std::stringstream file_name;
+    file_name << std::filesystem::current_path().string() << "/../" << "matrix_examples/sparse_spd/" << n;
+    std::ifstream fstream;
+    fstream.open(file_name.str());
+    REQUIRE(fstream.is_open());
+    fstream >> a;
+    fstream.close();
+    REQUIRE(a.data_);
+    NHelpers::GenRandomVector(b, n, true);
+    Vector<double> x(n);
 }
 
 TEST_CASE("Benchmark CG") {
-    TMatrix<double> A;
-    TVector<double> b;
-    TVector<double> x;    
-    TVector<double> result;
     {
-        Prepare(A, b, 10);
-        BENCHMARK("Size 10") {
-            ConjugateGradient(A, b, x);
+        SparseMatrix<double> a_sparse;
+        Matrix<double> a_dense;
+        Vector<double> b;
+        Vector<double> x;
+        Prepare(a_sparse, b, 256);
+        BENCHMARK("Size 256") {
+            ConjugateGradient(a_sparse, b, x);
         };
-        REQUIRE(TMatrix<double>::MVMultiply(A, x, result));
-        REQUIRE(RoughEq<double, double>(TVector<double>::Norm2(result - b), 0, 0.001));
     }
     {
-        Prepare(A, b, 500);
-        BENCHMARK("Size 500") {
-            ConjugateGradient(A, b, x);
+        SparseMatrix<double> a_sparse;
+        Matrix<double> a_dense;
+        Vector<double> b;
+        Vector<double> x;
+        Prepare(a_sparse, b, 512);
+        BENCHMARK("Size 512") {
+            ConjugateGradient(a_sparse, b, x);
         };
-        REQUIRE(TMatrix<double>::MVMultiply(A, x, result));
-        REQUIRE(RoughEq<double, double>(TVector<double>::Norm2(result - b), 0, 0.001));
     }
     {
-        Prepare(A, b, 1000);
-        BENCHMARK("Size 1000") {
-            ConjugateGradient(A, b, x);
+        SparseMatrix<double> a_sparse;
+        Matrix<double> a_dense;
+        Vector<double> b;
+        Vector<double> x;
+        Prepare(a_sparse, b, 1024);
+        BENCHMARK("Size 1024") {
+            ConjugateGradient(a_sparse, b, x);
         };
-        REQUIRE(TMatrix<double>::MVMultiply(A, x, result));
-        REQUIRE(RoughEq<double, double>(TVector<double>::Norm2(result - b), 0, 0.01));
+    }
+    {
+        SparseMatrix<double> a_sparse;
+        Matrix<double> a_dense;
+        Vector<double> b;
+        Vector<double> x;
+        Prepare(a_sparse, b, 2048);
+        BENCHMARK("Size 2048") {
+            ConjugateGradient(a_sparse, b, x);
+        };
+    }
+    {
+        SparseMatrix<double> a_sparse;
+        Matrix<double> a_dense;
+        Vector<double> b;
+        Vector<double> x;
+        Prepare(a_sparse, b, 4096);
+        BENCHMARK("Size 4096") {
+            ConjugateGradient(a_sparse, b, x);
+        };
+    }
+    {
+        SparseMatrix<double> a_sparse;
+        Matrix<double> a_dense;
+        Vector<double> b;
+        Vector<double> x;
+        Prepare(a_sparse, b, 8192);
+        BENCHMARK("Size 8192") {
+            ConjugateGradient(a_sparse, b, x);
+        };
+    }
+    {
+        SparseMatrix<double> a_sparse;
+        Matrix<double> a_dense;
+        Vector<double> b;
+        Vector<double> x;
+        Prepare(a_sparse, b, 16384);
+        BENCHMARK("Size 16384") {
+            ConjugateGradient(a_sparse, b, x);
+        };
     }
 }

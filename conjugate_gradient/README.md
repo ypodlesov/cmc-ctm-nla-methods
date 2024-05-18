@@ -1,3 +1,38 @@
 ### A simple version of CG (Conjugate Gradient).
 
-##### Benchmark results in file `bench_results.txt`
+##### Benchmark results
+
+Benchmark CG
+...............................................................................
+
+benchmark name                       samples       iterations    est run time
+                                     mean          low mean      high mean
+                                     std dev       low std dev   high std dev
+-------------------------------------------------------------------------------
+Size 256                                         5             1    158.155 ms 
+                                        30.6362 ms    30.3948 ms    30.8777 ms 
+                                        278.589 us    168.836 us     367.73 us 
+                                                                               
+Size 512                                         5             1    474.875 ms 
+                                        93.5246 ms    93.1857 ms    93.8352 ms 
+                                         384.98 us    251.424 us    502.811 us 
+                                                                               
+Size 1024                                        5             1     1.28954 s 
+                                        254.104 ms    253.491 ms    254.573 ms 
+                                        642.205 us    488.519 us    765.256 us 
+                                                                               
+Size 2048                                        5             1     3.11173 s 
+                                        618.631 ms    616.151 ms    621.485 ms 
+                                        2.99239 ms    2.11292 ms    3.53132 ms 
+                                                                               
+Size 4096                                        5             1     6.72483 s 
+                                         1.33877 s     1.33262 s      1.3448 s 
+                                        7.21186 ms    4.33359 ms    10.6794 ms 
+                                                                               
+Size 8192                                        5             1     17.1783 s 
+                                         3.45489 s     3.44111 s     3.48345 s 
+                                        21.1881 ms    4.29948 ms    29.4589 ms 
+                                                                               
+Size 16384                                       5             1     38.4892 s 
+                                         7.63827 s     7.62766 s     7.65727 s 
+                                        15.5452 ms    5.99529 ms    21.0671 ms 
