@@ -48,3 +48,15 @@ cmc-ctm-matrix-algos
         ├── test_channel.h
         └── util.h
 ```
+
+## Build project
+
+First build dependencies
+
+1. in GKlib catalog exec 
+    - `make config prefix=~/cmc-ctm-nla-methods/.deps`
+    - `make install`
+2. in METIS catalog exec 
+    - `make config shared=1 cc=gcc prefix=~/cmc-ctm-nla-methods/.deps i64=1 r64=11`
+    - `make install`
+3. build main project

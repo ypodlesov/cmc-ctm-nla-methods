@@ -27,13 +27,14 @@ function(add_if_exists name)
   endif()
 endfunction()
 
+
+set(DEPS_PATH ${CMAKE_CURRENT_SOURCE_DIR}/.deps)
 set(BASIC_LA_PATH ${CMAKE_CURRENT_SOURCE_DIR}/basic_la)
-set(METIS_INCLUDE_PATH ~/local/include)
+set(METIS_INCLUDE_PATH ${DEPS_PATH}/include)
+set(METIS_LIB_PATH ${DEPS_PATH}/lib/libmetis.so)
 
 add_if_exists(basic_la)
 add_if_exists(qr_decomposition)
 add_if_exists(conjugate_gradient)
 
-add_if_exists(GKlib)
-add_if_exists(METIS)
 add_if_exists(matrix_powers_mv)

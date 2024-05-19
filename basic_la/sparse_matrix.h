@@ -56,7 +56,7 @@ struct SparseMatrix: public CommonMatrix<SparseMatrix<double>, double> {
         return *this;
     }
 
-    void RemoveDiag(SparseMatrix& result) {
+    void RemoveDiag(SparseMatrix& result) const {
         int64_t diag_elems_num = 0;
         int64_t i_a_idx = 0;
         int64_t j_a_idx = 0;

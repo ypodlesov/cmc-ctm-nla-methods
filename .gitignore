@@ -36,4 +36,6 @@ build*
 *json*
 # *fortran*
 
+# Custom
 .cache
+*.deps
