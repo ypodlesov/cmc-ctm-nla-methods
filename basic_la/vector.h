@@ -40,7 +40,7 @@ struct Vector: public CommonContainer<Vector<T>, T, Hold> {
     ~Vector() = default;
 };
 
-template <typename T, typename std::enable_if<std::is_floating_point<T>::value>::type* = nullptr>
+template <typename T, typename std::enable_if<std::is_arithmetic<T>::value>::type* = nullptr>
 bool operator ==(const Vector<T>& a, const Vector<T>& b) {
     assert(a.mem_size_ == b.mem_size_);
     T diff = 0;

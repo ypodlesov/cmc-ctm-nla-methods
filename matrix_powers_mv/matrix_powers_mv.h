@@ -4,5 +4,5 @@
 #include <sparse_matrix.h>
 #include <vector.h>
 
-int ReorderMatrix(const SparseMatrix<double>& sp_matrix);
-void MatrixPowersMV(const SparseMatrix<double>& sp_matrix, const Vector<double>& x, const Vector<Vector<double>*>& res);
+bool ReorderMatrix(SparseMatrix<double>& sp_matrix);
+bool MatrixPowersMV(SparseMatrix<double>& sp_matrix, const Vector<double>& x, const std::vector<Vector<double>*>& res);
