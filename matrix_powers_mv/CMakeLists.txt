@@ -3,4 +3,5 @@ target_include_directories(test_matrix_powers_mv PRIVATE ${BASIC_LA_PATH})
 target_link_libraries(test_matrix_powers_mv PRIVATE BASIC_LA)
 
 target_include_directories(test_matrix_powers_mv PRIVATE ${METIS_INCLUDE_PATH})
-target_link_libraries(test_matrix_powers_mv PRIVATE metis)
+target_link_libraries(test_matrix_powers_mv PRIVATE ~/local/lib/libmetis.so)
+target_link_libraries(test_matrix_powers_mv PRIVATE /home/e.podlesov/local/lib/libGKlib.a)
