@@ -59,3 +59,11 @@ TEST_CASE("Size 256") {
 TEST_CASE("Size 512") {
     Test(512);
 }
+
+TEST_CASE("Size 1024") {
+    Test(1024);
+}
+
+TEST_CASE("Size 2048") {
+    Test(2048);
+}

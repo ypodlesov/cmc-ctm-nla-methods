@@ -39,12 +39,80 @@ bool ReorderMatrix(const SparseMatrix<double>& sp_matrix, SparseMatrix<double>& 
     return true;
 }
 
+// bool MatrixPowersMV(const SparseMatrix<double>& sp_matrix, const Vector<double>& x, std::vector<Vector<double>>& res) {
+//     res.front() = x;
+
+//     const int64_t cores_num = std::min<int64_t>(x.mem_size_, std::thread::hardware_concurrency());
+//     const int64_t row_step = sp_matrix.row_cnt_ / cores_num;
+//     std::vector<std::pair<SparseMatrix<double>, Vector<double>>> matrix_blocks(cores_num);
+//     {
+//         int64_t cur_row_start = 0;
+//         for (auto& [matrix_block, vector_block] : matrix_blocks) {
+//             if (sp_matrix.i_a_[cur_row_start + row_step] - sp_matrix.i_a_[cur_row_start] <= 0) {
+//                 continue;
+//             }
+//             matrix_block = SparseMatrix<double>(sp_matrix, cur_row_start, cur_row_start + row_step);
+//             vector_block = Vector<double>(row_step);
+//         }
+//     }
+
+//     for (auto cur_x_iter = std::next(res.begin()); cur_x_iter != res.end(); ++cur_x_iter) {
+//         const auto& prev_x = *std::prev(cur_x_iter);
+//         auto& cur_x = *cur_x_iter;
+//         assert(prev_x.mem_size_ == x.mem_size_);
+//         assert(cur_x.mem_size_ == x.mem_size_);
+         
+//         std::vector<std::thread> threads;
+//         threads.reserve(cores_num);
+//         int64_t cur_row_start = 0;
+//         for (auto& [matrix_block, vector_block] : matrix_blocks) {
+//             const int64_t local_row_start = cur_row_start;
+
+//             // async compute corresponding component
+//             threads.emplace_back([row_step](
+//                     const SparseMatrix<double>& matrix_block
+//                     , Vector<double>& vector_block
+//                     , const Vector<double>& cur_x
+//                     , const Vector<double>& prev_x
+//                     , const int64_t local_row_start) {
+//                 matrix_block.VecMult(prev_x, vector_block);
+//                 for (int64_t i = local_row_start; i < local_row_start + row_step; ++i) {
+//                     cur_x.data_[i] = vector_block.data_[i - local_row_start];
+//                 }
+//             }, std::ref(matrix_block)
+//             , std::ref(vector_block)
+//             , std::ref(cur_x)
+//             , std::ref(prev_x)
+//             , local_row_start);
+
+//             cur_row_start += row_step;
+//         }
+//         for (auto&& thread : threads) {
+//             thread.join();
+//         }
+//     }
+//     return true;
+// }
+
 bool MatrixPowersMV(const SparseMatrix<double>& sp_matrix, const Vector<double>& x, std::vector<Vector<double>>& res) {
-    // SparseMatrix<double> reordered;
-    // if (!ReorderMatrix(sp_matrix, reordered)) {
-    //     return false;
-    // }
     res.front() = x;
+
+    const int64_t cores_num = std::min<int64_t>(x.mem_size_, std::thread::hardware_concurrency());
+    assert(sp_matrix.row_cnt_ % cores_num == 0);
+    const int64_t row_step = sp_matrix.row_cnt_ / cores_num;
+    std::vector<std::pair<SparseMatrix<double>, Vector<double>>> matrix_blocks(cores_num);
+    {
+        int64_t cur_row_start = 0;
+        for (auto& [matrix_block, vector_block] : matrix_blocks) {
+            if (sp_matrix.i_a_[cur_row_start + row_step] - sp_matrix.i_a_[cur_row_start] <= 0) {
+                continue;
+            }
+            vector_block = Vector<double>(row_step);
+            matrix_block = SparseMatrix<double>(sp_matrix, cur_row_start, cur_row_start + row_step);
+            cur_row_start += row_step;
+        }
+    }
+
     for (auto cur_x_iter = std::next(res.begin()); cur_x_iter != res.end(); ++cur_x_iter) {
         auto& prev_x = *std::prev(cur_x_iter);
         auto& cur_x = *cur_x_iter;
@@ -52,44 +120,19 @@ bool MatrixPowersMV(const SparseMatrix<double>& sp_matrix, const Vector<double>&
         assert(cur_x.mem_size_ == x.mem_size_);
         NHelpers::Nullify(cur_x.data_, cur_x.mem_size_);
         
-        int64_t cores_num = std::min<int64_t>(x.mem_size_, std::thread::hardware_concurrency());
-        assert(sp_matrix.row_cnt_ % cores_num == 0);
-        const int64_t row_step = sp_matrix.row_cnt_ / cores_num;
-
         {
-            std::vector<std::pair<SparseMatrix<double>, Vector<double>>> matrix_blocks(cores_num);
             std::vector<std::thread> threads;
             threads.reserve(cores_num);
             {
                 int64_t cur_row_start = 0;
                 for (auto& [matrix_block, vector_block] : matrix_blocks) {
-                    if (sp_matrix.i_a_[cur_row_start + row_step] - sp_matrix.i_a_[cur_row_start] <= 0) {
-                        continue;
-                    }
-                    matrix_block = SparseMatrix<double>(sp_matrix, cur_row_start, cur_row_start + row_step);
-                    for (int64_t i = 0; i < matrix_block.mem_size_; ++i) {
-                        assert(NHelpers::RoughEq(matrix_block.data_[i], sp_matrix.data_[sp_matrix.i_a_[cur_row_start] + i], 1e-6));
-                    }
-                    [[maybe_unused]] double* tmp_ptr = new double[512];
-                    vector_block = Vector<double>(row_step);
-                    const int64_t local_row_start = cur_row_start;
-
                     // async compute corresponding component
-                    threads.emplace_back([row_step](
-                            const SparseMatrix<double>& matrix_block
-                            , Vector<double>& vector_block
-                            , const Vector<double>& cur_x
-                            , const Vector<double>& prev_x
-                            , const int64_t local_row_start) {
+                    threads.emplace_back([&, cur_row_start, row_step]() {
                         matrix_block.VecMult(prev_x, vector_block);
-                        for (int64_t i = local_row_start; i < local_row_start + row_step; ++i) {
-                            cur_x.data_[i] = vector_block.data_[i - local_row_start];
+                        for (int64_t i = cur_row_start; i < cur_row_start + row_step; ++i) {
+                            cur_x.data_[i] = vector_block.data_[i - cur_row_start];
                         }
-                    }, std::ref(matrix_block)
-                    , std::ref(vector_block)
-                    , std::ref(cur_x)
-                    , std::ref(prev_x)
-                    , local_row_start);
+                    });
                     cur_row_start += row_step;
                 }
                 for (auto&& thread : threads) {
