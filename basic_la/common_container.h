@@ -2,6 +2,7 @@
 #include "helpers.h"
 #include <cassert>
 #include <cstddef>
+#include <cstdint>
 #include <cstdlib>
 #include <ctime>
 #include <type_traits>
@@ -14,7 +15,7 @@ struct CommonContainer {
 
     CommonContainer(int64_t mem_size)
         : mem_size_{mem_size}
-        , data_{new T[mem_size_]}
+        , data_{new T[mem_size]}
     {
     }
 
@@ -35,6 +36,12 @@ struct CommonContainer {
         other.data_ = nullptr;
         std::swap(mem_size_, other.mem_size_);
         other.mem_size_ = 0;
+    }
+
+    CommonContainer(T* data, int64_t mem_size) 
+        : mem_size_{mem_size}
+        , data_{data}
+    {
     }
 
     CommonContainer& operator =(const CommonContainer& other) {

@@ -3,6 +3,7 @@
 #include "helpers.h"
 #include "vector.h"
 #include <cassert>
+#include <cstdint>
 #include <utility>
 
 template <typename SpecMatrix, typename T, bool Hold = true>
@@ -45,6 +46,13 @@ struct CommonMatrix: public CommonContainer<CommonMatrix<SpecMatrix, T, Hold>, T
         std::swap(row_cnt_, other.row_cnt_);
         std::swap(col_cnt_, other.col_cnt_);
         return *this;
+    }
+
+    CommonMatrix(T* data, const int64_t mem_size, const int64_t row_cnt, const int64_t col_cnt)
+        : Base{data, mem_size}
+        , row_cnt_{row_cnt}
+        , col_cnt_{col_cnt}
+    {
     }
 
     inline T Get(int64_t row, int64_t col) const {

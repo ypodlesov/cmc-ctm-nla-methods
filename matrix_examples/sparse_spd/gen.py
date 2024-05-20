@@ -7,24 +7,33 @@ import sklearn.datasets
 
 
 
-filename = sys.argv[1]
-sz = int(filename)
-matrix = sklearn.datasets.make_sparse_spd_matrix(n_dim=sz, alpha=(sz - min(10, sz - 1)) / sz, sparse_format='csr').sorted_indices() * 10
+max_sz_str = sys.argv[1]
 
-f = open(filename, 'w')
+max_sz = int(max_sz_str)
+i = 4
+while i <= max_sz:
+    sz = i
+    filename = str(sz)
 
-print(sz, sz, file=f)
-print(len(matrix.data), file=f)
-for elem in matrix.data:
-    print(elem, end=' ', file=f)
-print(file=f)
+    matrix = sklearn.datasets.make_sparse_spd_matrix(n_dim=sz, alpha=(sz - min(10, sz - 1)) / sz, sparse_format='csr').sorted_indices() / 10
 
-for elem in matrix.indices:
-    print(elem, end=' ', file=f)
-print(file=f)
+    f = open(filename, 'w')
 
-for elem in matrix.indptr:
-    print(elem, end=' ', file=f)
-print(file=f)
+    print(sz, sz, file=f)
+    print(len(matrix.data), file=f)
+    for elem in matrix.data:
+        print(elem, end=' ', file=f)
+    print(file=f)
 
-f.close()
+    for elem in matrix.indices:
+        print(elem, end=' ', file=f)
+    print(file=f)
+
+    for elem in matrix.indptr:
+        print(elem, end=' ', file=f)
+    print(file=f)
+
+    f.close()
+    print("finished with matrix of size:", i)
+
+    i *= 2

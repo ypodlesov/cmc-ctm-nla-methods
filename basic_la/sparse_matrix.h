@@ -1,20 +1,25 @@
 #pragma once
 #include "common_matrix.h"
+#include <cstdint>
 #include <cstring>
 #include <iostream>
 #include <random>
 #include <set>
 #include <utility>
 
-template <typename T>
-struct SparseMatrix: public CommonMatrix<SparseMatrix<double>, double> {
-    using Base = CommonMatrix<SparseMatrix<double>, double>;
+template <typename T, bool Hold = true>
+struct SparseMatrix: public CommonMatrix<SparseMatrix<T, Hold>, T, Hold> {
+    using Base = CommonMatrix<SparseMatrix<T, Hold>, T, Hold>;
+    using Base::mem_size_;
+    using Base::data_;
+    using Base::row_cnt_;
+    using Base::col_cnt_;
 
     SparseMatrix() = default;
 
-    SparseMatrix(int64_t row_cnt, int64_t col_cnt, int64_t non_zero)
+    SparseMatrix(int64_t row_cnt, const int64_t col_cnt, const int64_t non_zero)
         : Base(row_cnt, col_cnt, std::min(non_zero, row_cnt * col_cnt))
-        , j_a_{new int64_t[mem_size_]}
+        , j_a_{new int64_t[std::min(non_zero, row_cnt * col_cnt)]}
         , i_a_{new int64_t[row_cnt + 1]}
     {
         std::memset(i_a_, 0, (row_cnt_ + 1) * sizeof(decltype(row_cnt)));
@@ -22,8 +27,8 @@ struct SparseMatrix: public CommonMatrix<SparseMatrix<double>, double> {
 
     SparseMatrix(const SparseMatrix& other)
         : Base(other)
-        , j_a_{new int64_t[mem_size_]}
-        , i_a_{new int64_t[row_cnt_ + 1]}
+        , j_a_{new int64_t[other.mem_size]}
+        , i_a_{new int64_t[other.row_cnt + 1]}
     {
         std::memcpy(j_a_, other.j_a_, mem_size_ * sizeof(decltype(col_cnt_)));
         std::memcpy(i_a_, other.i_a_, (row_cnt_ + 1) * sizeof(decltype(row_cnt_)));
@@ -36,6 +41,17 @@ struct SparseMatrix: public CommonMatrix<SparseMatrix<double>, double> {
     {
         other.j_a_ = nullptr;
         other.i_a_ = nullptr;
+    }
+
+    SparseMatrix(const SparseMatrix<T>& other, const int64_t row_start, const int64_t row_end)
+        : SparseMatrix{row_end - row_start, other.col_cnt_, std::max<int64_t>(other.i_a_[row_end] - other.i_a_[row_start], 0)}
+    {
+        std::memcpy(data_, &other.data_[other.i_a_[row_start]], mem_size_ * sizeof(T));
+        std::memcpy(j_a_, &other.j_a_[other.i_a_[row_start]], mem_size_ * sizeof(int64_t));
+        for (int64_t i = row_start; i < row_end; ++i) {
+            i_a_[i - row_start] = std::max<int64_t>(other.i_a_[i] - other.i_a_[row_start], 0);
+        }
+        i_a_[row_end - row_start] = row_cnt_ * col_cnt_;
     }
 
     SparseMatrix& operator =(const SparseMatrix& other) {
@@ -125,16 +141,15 @@ struct SparseMatrix: public CommonMatrix<SparseMatrix<double>, double> {
         }
     }
 
-
     ~SparseMatrix() {
-        if (j_a_) {
+        if (j_a_ && Hold) {
             delete[] j_a_;
-            j_a_ = nullptr;
         }
-        if (i_a_) {
+        j_a_ = nullptr;
+        if (i_a_ && Hold) {
             delete[] i_a_;
-            i_a_ = nullptr;
         }
+        i_a_ = nullptr;
     }
 
     int64_t* j_a_{nullptr};
