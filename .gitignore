@@ -39,3 +39,4 @@ build*
 # Custom
 .cache
 *.deps
+*.DS_Store
