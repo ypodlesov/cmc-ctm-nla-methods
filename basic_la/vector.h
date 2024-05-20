@@ -7,8 +7,6 @@
 template <typename T, bool Hold = true>
 struct Vector: public CommonContainer<Vector<T>, T, Hold> {
     using Base = CommonContainer<Vector<T>, T, Hold>;
-    using Base::data_;
-    using Base::mem_size_;
 
     Vector() = default;
 
@@ -36,8 +34,6 @@ struct Vector: public CommonContainer<Vector<T>, T, Hold> {
         Base::operator =(std::move(other));
         return *this;
     }
-
-    ~Vector() = default;
 };
 
 template <typename T, typename std::enable_if<std::is_arithmetic<T>::value>::type* = nullptr>

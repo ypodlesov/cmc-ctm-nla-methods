@@ -30,8 +30,8 @@ struct CommonContainer {
     CommonContainer(CommonContainer&& other) {
         if (data_ && Hold) {
             delete[] data_;
-            data_ = nullptr;
         }
+        data_ = nullptr;
         std::swap(data_, other.data_);
         other.data_ = nullptr;
         std::swap(mem_size_, other.mem_size_);
@@ -47,8 +47,8 @@ struct CommonContainer {
     CommonContainer& operator =(const CommonContainer& other) {
         if (data_ && Hold) {
             delete[] data_;
-            data_ = nullptr;
         }
+        data_ = nullptr;
         mem_size_ = other.mem_size_;
         data_ = new T[mem_size_];
         for (int64_t i = 0; i < mem_size_; ++i) {
@@ -58,10 +58,13 @@ struct CommonContainer {
     }
 
     CommonContainer& operator =(CommonContainer&& other) {
+        if (data_ && Hold) {
+            delete[] data_;
+        }
+        data_ = nullptr;
         std::swap(data_, other.data_);
-        other.data_ = nullptr;
+        mem_size_ = 0;
         std::swap(mem_size_, other.mem_size_);
-        other.mem_size_ = 0;
         return *this;
     }
 
@@ -90,10 +93,10 @@ struct CommonContainer {
     ~CommonContainer() {
         if (data_ && Hold) {
             delete[] data_;
-            data_ = nullptr;
         }
+        data_ = nullptr;
     }
 
-    int64_t mem_size_;
+    int64_t mem_size_{0};
     T* data_{nullptr};
 };
