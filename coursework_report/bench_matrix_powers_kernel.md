@@ -15,7 +15,7 @@
 | MatrixPowersMV with s=8192, size=8192 | 5 | 1 | 34.0671 s             | 6.71484 s     | 6.68201 s     | 6.73016 s    | 24.4507 ms    | 7.76424 ms    | 34.2454 ms    |
 | Sequential MatVec's with s=8192, size=8192 | 5 | 1 | 1.59192 m             | 19.241 s     | 19.1744 s     | 19.2905 s    | 64.8687 ms    | 37.7646 ms    | 94.7522 ms    |
 | MatrixPowersMV with s=16384, size=16384 | 5 | 1 | 2.10464 m             | 23.5549 s     | 23.472 s      | 23.6395 s    | 99.5368 ms    | 79.7288 ms    | 106.88 ms     |
-| Sequential MatVec's with s=16384, size=16384 | 5 | 1 | 6.22988 m             | 23.5549 s     | 23.472 s      | 23.6395 s    | 99.5368 ms    | 79.7288 ms    | 106.88 ms     |
+| Sequential MatVec's with s=16384, size=16384 | 5 | 1 | 6.22988 m OOM Killed            | _     | _      | _    | _    | _    | _     |
 
 ### Virtualization Features
 - Hypervisor vendor: KVM

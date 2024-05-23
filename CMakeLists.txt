@@ -37,5 +37,7 @@ set(METIS_LIB_PATH ${DEPS_PATH}/lib/libmetis.so)
 add_if_exists(basic_la)
 add_if_exists(qr_decomposition)
 add_if_exists(conjugate_gradient)
+add_if_exists(conjugate_gradient_parallel)
+add_if_exists(conjugate_gradient_omp)
 
 add_if_exists(matrix_powers_mv)

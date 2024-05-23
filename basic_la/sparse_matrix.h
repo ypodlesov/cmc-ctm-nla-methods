@@ -6,6 +6,7 @@
 #include <random>
 #include <set>
 #include <utility>
+#include <thread>
 
 template <typename T, bool Hold = true>
 struct SparseMatrix: public CommonMatrix<SparseMatrix<T, Hold>, T, Hold> {
@@ -129,11 +130,14 @@ struct SparseMatrix: public CommonMatrix<SparseMatrix<T, Hold>, T, Hold> {
         return result;
     }
 
-    void VecMult(const Vector<T>& x, Vector<T>& result) const {
+    void VecMult(const Vector<T>& x, Vector<T>& result, const int64_t row_start = 0, int64_t row_end = 0) const {
+        if (row_end == 0) {
+            row_end = row_cnt_;
+        }
         assert(result.data_ && result.mem_size_ == row_cnt_ && col_cnt_ == x.mem_size_);
-        NHelpers::Nullify(result.data_, result.mem_size_);
-        int64_t i = 0;
-        for (int64_t j = 0; j < mem_size_; ++j) {
+        NHelpers::Nullify(&result.data_[row_start], row_end - row_start);
+        int64_t i = row_start;
+        for (int64_t j = i_a_[row_start]; j < i_a_[row_end]; ++j) {
             if (i + 1 < row_cnt_ && i_a_[i + 1] <= j) {
                 ++i;
             }

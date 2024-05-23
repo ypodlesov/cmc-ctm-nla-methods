@@ -22,16 +22,24 @@ namespace NHelpers {
     }
 
     template <typename T>
-    void Nullify(T* data_, size_t n) {
-        for (size_t i = 0; i < n; ++i) {
+    void Nullify(T* data_, int64_t n) {
+        for (int64_t i = 0; i < n; ++i) {
             data_[i] = 0;
         }
     }
 
     template <typename T>
-    T InnerProd(T* data_1, T* data_2, size_t n) {
+    T InnerProd(T* data_1, T* data_2, int64_t n, T& result) {
+        for (int64_t i = 0; i < n; ++i) {
+            result += data_1[i] * data_2[i];
+        }
+        return result;
+    }
+
+    template <typename T>
+    T InnerProd(T* data_1, T* data_2, int64_t n) {
         T result{};
-        for (size_t i = 0; i < n; ++i) {
+        for (int64_t i = 0; i < n; ++i) {
             result += data_1[i] * data_2[i];
         }
         return result;

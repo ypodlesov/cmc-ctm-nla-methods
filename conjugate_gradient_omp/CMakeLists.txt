@@ -1,0 +1,16 @@
+find_package(OpenMP REQUIRED)
+if (OPENMP_FOUND)
+    set (CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ${OpenMP_C_FLAGS}")
+    set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${OpenMP_CXX_FLAGS}")
+    set (CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} ${OpenMP_EXE_LINKER_FLAGS}")
+endif()
+
+add_catch(test_conjugate_gradient_omp test.cpp conjugate_gradient_omp.cpp)
+target_include_directories(test_conjugate_gradient_omp PRIVATE ${BASIC_LA_PATH})
+target_link_libraries(test_conjugate_gradient_omp PRIVATE BASIC_LA)
+target_link_libraries(test_conjugate_gradient_omp PRIVATE OpenMP::OpenMP_CXX)
+
+add_catch(bench_conjugate_gradient_omp run.cpp conjugate_gradient_omp.cpp)
+target_include_directories(bench_conjugate_gradient_omp PRIVATE ${BASIC_LA_PATH})
+target_link_libraries(bench_conjugate_gradient_omp PRIVATE BASIC_LA)
+target_link_libraries(test_conjugate_gradient_omp PRIVATE OpenMP::OpenMP_CXX)
